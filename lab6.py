@@ -6,25 +6,23 @@ app = Flask(__name__)
 def home():
 	return "<h1>Welcome to my app!</h1>"
 
-@app.route("/form", methods=['POST', 'GET'])
-def form():
-	return render_template('form.html')
-
 @app.route('/userdata/<username>')
-def userdata(username):
+def userdata(username,form_data):
 	return render_template('user_data.html', form_data = form_data)
 
 @app.route('/login', methods = ['POST', 'GET'])
 def login():
-	if request.method == 'GET':
-		return f"<h1>Hello, Anonymous</h1><h2>Please go to <a href='/form'>form</a> first!</h2>\
-		<p>This page should not be accessed directly. Please fill out the form with your information first. Thank you!</p>"
-
-	elif request.method == 'POST':
-		form_data = request.form
-		print(request.form['name'])
-		name = form_data.get('name', 'User')
-		return redirect(url_for('login', username=name))
+	if request.method == 'POST':
+		form_data = dict(request.form)
+		print(form_data)
+		name = request.form['Name']
+		print(name)
+		#form_data = request.get_json()
+		print(f"this is the result of result.get_json(): {form_data}")
+		return redirect(url_for('userdata', username=name, form_data=form_data))
+	else:
+		username = request.args.get('name')
+		return render_template('form.html')
 
 @app.route("/get_your_ip", methods=["GET"])
 def get_your_ip():
